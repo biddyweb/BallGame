@@ -8,27 +8,27 @@ public class PlayerController : MonoBehaviour {
 	public Text countText;
 	public Text winText;
 	private int count;
-	
+	public float rotation;
+	public float rotationSpeed;
 
 	void Start()
 	{
 		count = 0;
+		rotation = 0;
 		setCountText ();
 	}
 	void FixedUpdate()
 	{
-		if (rigidbody.position.y < -20)
-		{
-			rigidbody.position = new Vector3(0,0.5f,0);
-			rigidbody.velocity = new Vector3(0,0,0);
-		}
-		float horizontalMovement = Input.GetAxis ("Horizontal");
-		float verticalMovement = Input.GetAxis ("Vertical");
-
+		checkReset();
 		
-		Vector3 movement = new Vector3 (horizontalMovement, 0, verticalMovement);
+		float turnDirection = Input.GetAxis ("Horizontal");
+		float moveDirection = Input.GetAxis ("Vertical");
 
-		rigidbody.AddForce (movement * speed* Time.deltaTime);
+		rotation += turnDirection * rotationSpeed;
+
+		Vector3 movement = new Vector3 (Mathf.Sin (rotation), 0, Mathf.Cos (rotation));
+
+		rigidbody.AddForce (movement * moveDirection * speed* Time.deltaTime);
 	}
 
 	void OnTriggerEnter(Collider other) {
@@ -45,5 +45,15 @@ public class PlayerController : MonoBehaviour {
 		countText.text = "Count: " + count.ToString ();
 		if (count == 4)
 			winText.text = "YOU WIN!";
+	}
+
+	void checkReset()
+	{
+		//Fallen Off
+		if (rigidbody.position.y < -20)
+		{
+			rigidbody.position = new Vector3(0,0.5f,0);
+			rigidbody.velocity = new Vector3(0,0,0);
+		}
 	}
 }
